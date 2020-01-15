@@ -1,6 +1,7 @@
 {
   "name": "rollandrock/composer-interaction",
   "type": "composer-plugin",
+  "minimum-stability": "stable",
   "require": {
     "php": "^7.4",
     "composer-plugin-api": "^1.1",
