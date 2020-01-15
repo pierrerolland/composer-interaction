@@ -6,7 +6,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
-use RollandRock\Exception\ExtraNotFoundException;
+use RollAndRock\Exception\ExtraNotFoundException;
 
 class ComposerInteractionPlugin implements PluginInterface, EventSubscriberInterface
 {
@@ -34,7 +34,6 @@ class ComposerInteractionPlugin implements PluginInterface, EventSubscriberInter
     {
         $packagesToInstall = array_filter($this->configuration, fn($entry) => $entry['action'] === 'replace');
 
-        var_dump($packagesToInstall);
-        die;
+        var_dump($packagesToInstall);die;
     }
 }

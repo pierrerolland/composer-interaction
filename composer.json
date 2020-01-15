@@ -9,5 +9,10 @@
   },
   "extra": {
     "class": "RollAndRock\\ComposerInteractionPlugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "RollAndRock\\": ""
+    }
   }
 }
