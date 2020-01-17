@@ -1,5 +1,7 @@
 # Add interaction to composer create-project
 
+[![Build Status](https://travis-ci.org/pierrerolland/composer-interaction.svg?branch=master)](https://travis-ci.org/pierrerolland/composer-interaction)
+
 This composer plugin allows your `composer create-project` command to ask some information that would be necessary to either install optional new packages, or replace some placeholders after the installation.
 
 With a piece of configuration set in your application skeleton's `composer.json`, composer will ask any kind of question, and perform actions accordingly.
