@@ -1,6 +1,7 @@
 {
   "name": "rollandrock/composer-interaction",
   "type": "composer-plugin",
+  "license": "MIT",
   "minimum-stability": "stable",
   "require": {
     "php": "^7.4",
