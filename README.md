@@ -14,23 +14,19 @@ Add the following line in your skeleton's `composer.json`:
 
 ```json
 {
-  ...,
   "require": {
     "rollandrock/composer": "^1.0"
   },
-  ...,
   "extra": {
     "rollandrock-interaction": {
       "questions:" [
         {
           "type": "add-package",
-          "question": "Would you like to do stuff?",
-          ...
+          "question": "Would you like to do stuff?"
         },
         {
           "type": "replace",
-          "question": "What is the name of your dog?",
-          ...
+          "question": "What is the name of your dog?"
         }
       ]
     }
