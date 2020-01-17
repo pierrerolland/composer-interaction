@@ -1,5 +1,7 @@
 # Add interaction to composer create-project
 
+[![Build Status](https://travis-ci.org/pierrerolland/composer-interaction.svg?branch=master)](https://travis-ci.org/pierrerolland/composer-interaction)
+
 This composer plugin allows your `composer create-project` command to ask some information that would be necessary to either install optional new packages, or replace some placeholders after the installation.
 
 With a piece of configuration set in your application skeleton's `composer.json`, composer will ask any kind of question, and perform actions accordingly.
@@ -12,23 +14,19 @@ Add the following line in your skeleton's `composer.json`:
 
 ```json
 {
-  ...,
   "require": {
     "rollandrock/composer": "^1.0"
   },
-  ...,
   "extra": {
     "rollandrock-interaction": {
-      "questions:" [
+      "questions": [
         {
           "type": "add-package",
-          "question": "Would you like to do stuff?",
-          ...
+          "question": "Would you like to do stuff?"
         },
         {
           "type": "replace",
-          "question": "What is the name of your dog?",
-          ...
+          "question": "What is the name of your dog?"
         }
       ]
     }
@@ -46,7 +44,7 @@ This action will install all the packages needed if the user that installs the p
 
 ```json
 {
-  "type": "add-package",
+  "action": "add-package",
   "question": "Would you like to add a bundle to help you configure RabbitMQ vhosts?",
   "packages": {
     "olaurendeau/rabbit-mq-admin-toolkit-bundle": "^2.0"
