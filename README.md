@@ -34,6 +34,8 @@ Add the following line in your skeleton's `composer.json`:
 }
 ```
 
+***
+
 ### Questions configuration
 
 There are currently two actions that will follow your questions: "add-package" and "replace".
@@ -56,6 +58,8 @@ This action will install all the packages needed if the user that installs the p
 ```
 
 If the user answers "yes", composer will install `olaurendeau/rabbit-mq-admin-toolkit-bundle` and add `RABBITMQ_USER` to the `.env` file.
+
+The configuration of `add-package` questions can also have a `reference` property, that will allow conditional questions to be asked. See [conditional questions section](#conditional-questions).
 
 #### replace
 
@@ -87,6 +91,51 @@ This action will search for a given placeholder and replace it with the user's a
 }
 ```
 
+---
+
+#### Conditional questions
+
+Each question can have a `if` property. In this case, the question will be asked if the referenced boolean question (`add-package` ones) has received the `yes` answer.
+
+Example:
+```json
+[
+    {
+        "reference": "rmq",
+        "action": "add-package",
+        "question": "Would you like to install RabbitMQ?",
+        "packages": {
+           "swarrot/swarrot-bundle": "*"
+        }
+    },
+    {
+        "if": "rmq",
+        "reference": "rmq-config",
+        "action": "add-package",
+        "question": "Would you like to add a bundle to help you configure RabbitMQ vhosts?",
+        "packages": {
+           "olaurendeau/rabbit-mq-admin-toolkit-bundle": "^2.0"
+        }
+    },
+    {
+        "if": "rmq-config",
+        "action": "replace",
+        "question": "What is the application's name?",
+        "type": "free",
+        "placeholders": [
+            {
+              "file": "config/parameters.yaml",
+              "placeholder": "{APP_NAME}"
+            }
+        ]
+    }
+]
+```
+
+Here, the second question will be asked only if the user answers yes to the first one. Same, the third question will be asked only if the user answers yes to the other ones.
+
+***
+
 ### Auto-removal
 
-This plugin self destroys after the project has been created.
+This plugin self destroys after the project has been created. Which means the plugin's require and the extra config won't appear in the final `composer.json`.

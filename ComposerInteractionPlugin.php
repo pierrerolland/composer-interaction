@@ -28,6 +28,7 @@ class ComposerInteractionPlugin implements PluginInterface, EventSubscriberInter
     private IOInterface $io;
     private ReplaceHandler $replaceHandler;
     private array $configuration;
+    private array $questionsMarkedForInstallation = [];
 
     public function __construct(
         Asker $asker = null,
@@ -74,16 +75,29 @@ class ComposerInteractionPlugin implements PluginInterface, EventSubscriberInter
             fn($entry) => $entry['action'] === 'add-package'
         );
 
-        foreach ($questionsForPackageInstall as $question) {
+        $this->handleInstallQuestions($questionsForPackageInstall);
+    }
+
+    private function handleInstallQuestions(array $questions): void
+    {
+        foreach ($questions as $question) {
             $question['type'] = 'bool';
 
             if (!isset($question['packages'])) {
                 throw new AddPackageQuestionHasNoPackagesException();
             }
 
+            if (isset($question['if']) && !in_array($question['if'], $this->questionsMarkedForInstallation)) {
+                continue;
+            }
+
             if ($this->asker->askQuestion($question)) {
                 $this->envHandler->addEnv($question['env'] ?? []);
                 $this->addPackageHandler->addPackages($question['packages']);
+
+                if (isset($question['reference'])) {
+                    array_push($this->questionsMarkedForInstallation, $question['reference']);
+                }
             }
         }
     }
@@ -96,6 +110,9 @@ class ComposerInteractionPlugin implements PluginInterface, EventSubscriberInter
         );
 
         foreach ($questionsForReplace as $question) {
+            if (isset($question['if']) && !in_array($question['if'], $this->questionsMarkedForInstallation)) {
+                continue;
+            }
             if (!isset($question['placeholders'])) {
                 throw new ReplaceQuestionHasNoPlaceholdersException();
             }

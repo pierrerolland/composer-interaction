@@ -198,6 +198,84 @@ class ComposerInteractionPluginSpec extends ObjectBehavior
         $this->installPackages();
     }
 
+    function its_install_packages_should_ask_conditional_questions_if_condition_is_met(
+        Asker $asker,
+        AddPackageHandler $addPackageHandler,
+        Composer $composer,
+        IOInterface $io,
+        RootPackageInterface $package
+    ): void
+    {
+        $composer->getPackage()->willReturn($package);
+        $package->getExtra()->willReturn([
+            'rollandrock-interaction' => [
+                'questions' => [
+                    [
+                        'reference' => 'q1',
+                        'action' => 'add-package',
+                        'question' => 'question1',
+                        'packages' => ['package1' => 'v1']
+                    ],
+                    [
+                        'reference' => 'q2',
+                        'action' => 'add-package',
+                        'question' => 'question2',
+                        'packages' => ['package2' => 'v2'],
+                    ],
+                    [
+                        'if' => 'q1',
+                        'action' => 'add-package',
+                        'question' => 'question3',
+                        'packages' => ['package3' => 'v3']
+                    ],
+                    [
+                        'if' => 'q2',
+                        'action' => 'add-package',
+                        'question' => 'question4',
+                        'packages' => ['package4' => 'v4']
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->activate($composer, $io);
+        $asker->askQuestion([
+            'reference' => 'q1',
+            'action' => 'add-package',
+            'question' => 'question1',
+            'packages' => ['package1' => 'v1'],
+            'type' => 'bool'
+        ])->willReturn(true)->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'reference' => 'q2',
+            'action' => 'add-package',
+            'question' => 'question2',
+            'packages' => ['package2' => 'v2'],
+            'type' => 'bool'
+        ])->willReturn(false)->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'if' => 'q1',
+            'action' => 'add-package',
+            'question' => 'question3',
+            'packages' => ['package3' => 'v3'],
+            'type' => 'bool'
+        ])->willReturn(true)->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'if' => 'q2',
+            'action' => 'add-package',
+            'question' => 'question4',
+            'packages' => ['package4' => 'v4'],
+            'type' => 'bool'
+        ])->shouldNotBeCalled();
+
+        $addPackageHandler->addPackages(['package1' => 'v1'])->shouldBeCalledOnce();
+        $addPackageHandler->addPackages(['package2' => 'v2'])->shouldNotBeCalled();
+        $addPackageHandler->addPackages(['package3' => 'v3'])->shouldBeCalledOnce();
+        $addPackageHandler->addPackages(['package4' => 'v4'])->shouldNotBeCalled();
+
+        $this->installPackages();
+    }
+
     function its_replace_should_throw_an_exception_if_question_has_no_placeholders(
         Asker $asker,
         ReplaceHandler $replaceHandler,
@@ -300,6 +378,92 @@ class ComposerInteractionPluginSpec extends ObjectBehavior
         $replaceHandler->replace('nofile.txt', 'placeholder', 'answer1')->shouldBeCalledOnce();
 
         $this->activate($composer, $io);
+        $this->replace();
+    }
+
+    function its_replace_should_ask_conditional_questions_if_condition_is_met(
+        Asker $asker,
+        AddPackageHandler $addPackageHandler,
+        ReplaceHandler $replaceHandler,
+        Composer $composer,
+        IOInterface $io,
+        RootPackageInterface $package
+    ): void
+    {
+        $composer->getPackage()->willReturn($package);
+        $package->getExtra()->willReturn([
+            'rollandrock-interaction' => [
+                'questions' => [
+                    [
+                        'reference' => 'q1',
+                        'action' => 'add-package',
+                        'question' => 'question1',
+                        'packages' => ['package1' => 'v1']
+                    ],
+                    [
+                        'reference' => 'q2',
+                        'action' => 'add-package',
+                        'question' => 'question2',
+                        'packages' => ['package2' => 'v2'],
+                    ],
+                    [
+                        'if' => 'q1',
+                        'action' => 'replace',
+                        'question' => 'question3',
+                        'placeholders' => [
+                            ['file' => 'file3', 'placeholder' => '{3}']
+                        ]
+                    ],
+                    [
+                        'if' => 'q2',
+                        'action' => 'replace',
+                        'question' => 'question4',
+                        'placeholders' => [
+                            ['file' => 'file4', 'placeholder' => '{4}']
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->activate($composer, $io);
+        $asker->askQuestion([
+            'reference' => 'q1',
+            'action' => 'add-package',
+            'question' => 'question1',
+            'packages' => ['package1' => 'v1'],
+            'type' => 'bool'
+        ])->willReturn(true)->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'reference' => 'q2',
+            'action' => 'add-package',
+            'question' => 'question2',
+            'packages' => ['package2' => 'v2'],
+            'type' => 'bool'
+        ])->willReturn(false)->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'if' => 'q1',
+            'action' => 'replace',
+            'question' => 'question3',
+            'placeholders' => [
+                ['file' => 'file3', 'placeholder' => '{3}']
+            ]
+        ])->willReturn('answer3')->shouldBeCalledOnce();
+        $asker->askQuestion([
+            'if' => 'q2',
+            'action' => 'replace',
+            'question' => 'question4',
+            'placeholders' => [
+                ['file' => 'file4', 'placeholder' => '{4}']
+            ]
+        ])->shouldNotBeCalled();
+
+        $addPackageHandler->addPackages(['package1' => 'v1'])->shouldBeCalledOnce();
+        $addPackageHandler->addPackages(['package2' => 'v2'])->shouldNotBeCalled();
+        $replaceHandler->replace('file3', '{3}', 'answer3')->shouldBeCalledOnce();
+        $replaceHandler->replace('file4', '{4}', Argument::type('string'))->shouldNotBeCalled();
+
+        $this->installPackages();
         $this->replace();
     }
 
