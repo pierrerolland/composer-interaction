@@ -44,7 +44,7 @@ This action will install all the packages needed if the user that installs the p
 
 ```json
 {
-  "type": "add-package",
+  "action": "add-package",
   "question": "Would you like to add a bundle to help you configure RabbitMQ vhosts?",
   "packages": {
     "olaurendeau/rabbit-mq-admin-toolkit-bundle": "^2.0"
