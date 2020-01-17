@@ -19,7 +19,7 @@ Add the following line in your skeleton's `composer.json`:
   },
   "extra": {
     "rollandrock-interaction": {
-      "questions:" [
+      "questions": [
         {
           "type": "add-package",
           "question": "Would you like to do stuff?"
